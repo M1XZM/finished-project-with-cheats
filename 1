@@ -1,0 +1,390 @@
+#include <iostream>
+
+int NotUsed = system("color 30");
+
+using namespace std;
+
+void menu();
+void play();
+void rules();
+void pc();
+void player();
+void zapol(const int size, int** sea);
+void zona(int t, int** sea, const int size);
+void outSea(const int size, int** sea);
+void inputPc(int& x, int& y, int& z, int& w, int** sea, const int size);
+void input(int& x, int& y, int& z, int& w, int** sea, const int size);
+void nichego();
+
+int main()
+{
+	setlocale(LC_ALL, "");
+	srand(time(NULL));
+	menu();
+}
+void menu()
+{
+	int key;
+	while (1)
+	{
+		system("cls");
+		cout << "\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t\t\t1 Играть\n\t\t\t\t\t\t\t2 Правила\n\t\t\t\t\t\t\t3 Выход\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+		cin >> key;
+		system("cls");
+		switch (key)
+		{
+		case 1:
+			play();
+			break;
+		case 2:
+			rules();
+			break;
+		default:
+			exit(0);
+		}
+	}
+}
+void play()
+{
+	int key;
+	cout << "\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t\t1 Играть с компьютером\n\t\t\t\t\t\t2 Играть со вторым игроком\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+	cin >> key;
+	system("cls");
+	switch (key)
+	{
+	case 1:
+		pc();
+		break;
+	case 2:
+		player();
+		break;
+	default:
+		exit(0);
+	}
+}
+void rules()
+{
+	cout << "Игровое поле — обычно квадрат 10x10 у каждого игрока, на котором размещается флот кораблей. Горизонтали обычно нумеруются сверху вниз, а вертикали помечаются буквами слева направо. При этом используются буквы русского алфавита от «а» до «к» (буквы «ё» и «й» обычно пропускаются) либо от «а» до «и» (с использованием буквы «ё»), либо буквы латинского алфавита от «a» до «j». Иногда используется слово «республика» или «снегурочка», так как в этих 10-буквенных словах ни одна буква не повторяется. Поскольку существуют различные варианты задания системы координат, то об этом лучше заранее договориться.\nРазмещаются :\n1 корабль — ряд из 4 клеток(«четырёхпалубный»; линкор)\n2 корабля — ряд из 3 клеток(«трёхпалубные»; крейсера)\n3 корабля — ряд из 2 клеток(«двухпалубные»; эсминцы)\n4 корабля — 1 клетка(«однопалубные»; торпедные катера)\nДругой вариант названия кораблей : «… - трубные»(напр.двухтрубные).\nПри размещении корабли не могут касаться друг друга сторонами и углами.Встречаются, однако, варианты, когда касание углами не запрещается.Встречаются также варианты игры, когда корабли могут размещаться буквой «Г»(«трёх - » и «четырёхпалубные»), квадратом или зигзагом(«четырёхпалубные»).Кроме того, есть варианты с другим набором кораблей(напр., один пятипалубный, два четырёхпалубных и т.д.) и / или другой формой поля(15x15 для пятипалубных(авианосец)).\nРядом со «своим» полем чертится «чужое» такого же размера, только пустое.Это участок моря, где плавают корабли противника.\nПри попадании в корабль противника — на чужом поле ставится крестик, при холостом выстреле — точка.Попавший стреляет ещё раз.\nСамыми уязвимыми являются линкор и торпедный катер : первый из - за крупных размеров, в связи с чем его сравнительно легко найти, а второй из - за того, что топится с одного удара, хотя его найти достаточно сложно.\n\n";
+	system("pause");
+}
+void pc()
+{
+	const int size = 10;
+	int x = 0, y = 0, z = 0, w = 0, a = 1, ships1 = 20, ships2 = 20, check = 0;
+	char letter = ' ';
+
+	int** sea1 = new int* [size];
+	for (int i = 0; i < size; i++)
+		sea1[i] = new int[size];
+	int** sea2 = new int* [size];
+	for (int i = 0; i < size; i++)
+		sea2[i] = new int[size];
+	zapol(size, sea1);
+	zapol(size, sea2);
+
+	zona(0, sea1, size);
+	cout << "игрок 1, расставляйте свои корабли\n";
+	outSea(size, sea2);
+	zona(1, sea2, size);
+	system("cls");
+
+	while (1)
+	{
+		if (a)
+		{
+			do
+			{
+				outSea(size, sea1);
+				cout << "игрок 1, ваш ход\nбуква: ";
+				cin >> letter;
+				x = (int)letter + 96;
+				cout << "цифра: ";
+				cin >> y;
+				system("cls");
+				if (sea1[y][x] == 1)
+				{
+					sea1[y][x] = 4;
+					ships1--;
+					check = 1;
+					if (!ships1)
+					{
+						a = 0;
+						break;
+					}
+				}
+				else
+				{
+					sea1[y][x] = 3;
+					check = 0;
+				}
+			} while (check);
+		}
+		if (!a)
+		{
+			cout << "первый игрок выиграл\n";
+			break;
+		}
+		if (a)
+		{
+			do
+			{
+				do
+				{
+					y = rand() % 10;
+					x = rand() % 10;
+				} while (sea2[y][x] > 2);
+				if (sea2[y][x] == 1)
+				{
+					sea2[y][x] = 4;
+					ships2--;
+					check = 1;
+					if (!ships2)
+					{
+						a = 0;
+						break;
+					}
+				}
+				else
+				{
+					sea2[y][x] = 3;
+					check = 0;
+				}
+				cout << "ход компьютера ";
+				if (!x)
+					cout << "а";
+				else if (x == 1)
+					cout << "б";
+				else if (x == 2)
+					cout << "в";
+				else if (x == 3)
+					cout << "г";
+				else if (x == 4)
+					cout << "д";
+				else if (x == 5)
+					cout << "е";
+				else if (x == 6)
+					cout << "ж";
+				else if (x == 7)
+					cout << "з";
+				else if (x == 8)
+					cout << "и";
+				else if (x == 9)
+					cout << "й";
+				cout << " " << y << "\n";
+				outSea(size, sea2);
+				system("pause");
+				system("cls");
+			} while (check);
+		}
+		if (!a)
+		{
+			cout << "компьютер выиграл\n";
+			break;
+		}
+	}
+	system("pause");
+}
+void player()
+{
+	const int size = 10, numberOfSingleDeckShips = 4, numberOfDoubleDeckShips = 3, numberOfThreeDeckShips = 2, numberOfFourDeckShips = 1;
+	int x = 0, y = 0, z = 0, w = 0, a = 1, number = 0, numberLetter = 0, naprovlenie = 0, ships1 = 20, ships2 = 20, check = 0;
+	char letter = ' ';
+
+	int** sea1 = new int* [size];
+	for (int i = 0; i < size; i++)
+		sea1[i] = new int[size];
+	int** sea2 = new int* [size];
+	for (int i = 0; i < size; i++)
+		sea2[i] = new int[size];
+
+	zapol(size, sea1);
+	zapol(size, sea2);
+
+	cout << "игрок 1, расставляйте свои корабли\n";
+	outSea(size, sea1);
+	zona(1, sea1, size);
+	system("cls");
+	cout << "игрок 2, расставляйте свои корабли\n";
+	outSea(size, sea2);
+	zona(1, sea2, size);
+	system("cls");
+
+	while (1)
+	{
+		if (a)
+		{
+			do
+			{
+				outSea(size, sea2);
+				cout << "игрок 1, ваш ход\nбуква: ";
+				cin >> letter;
+				x = (int)letter + 96;
+				cout << "цифра: ";
+				cin >> y;
+				system("cls");
+				if (sea2[y][x] == 1)
+				{
+					sea2[y][x] = 4;
+					ships2--;
+					check = 1;
+					if (!ships2)
+					{
+						a = 0;
+						break;
+					}
+				}
+				else
+				{
+					sea2[y][x] = 3;
+					check = 0;
+				}
+			} while (check);
+		}
+		if (!a)
+		{
+			cout << "первый игрок выиграл\n";
+			break;
+		}
+		if (a)
+		{
+			do
+			{
+				outSea(size, sea1);
+				cout << "игрок 2, ваш ход\nбуква: ";
+				cin >> letter;
+				x = (int)letter + 96;
+				cout << "цифра: ";
+				cin >> y;
+				system("cls");
+				if (sea1[y][x] == 1)
+				{
+					sea1[y][x] = 4;
+					ships1--;
+					check = 1;
+					if (!ships1)
+					{
+						a = 0;
+						break;
+					}
+				}
+				else
+				{
+					sea1[y][x] = 3;
+					check = 0;
+				}
+			} while (check);
+		}
+		if (!a)
+		{
+			cout << "второй игрок выиграл\n";
+			break;
+		}
+	}
+	system("pause");
+}
+void zapol(const int size, int** sea)
+{
+	for (int i = 0; i < size; i++)
+	{
+		for (int j = 0; j < size; j++)
+		{
+			sea[i][j] = 0;
+		}
+	}
+}
+void zona(int t, int** sea, const int size)
+{
+	int x = 0, y = 0, z = 0;
+	for (int w = 1; w <= 4; w++)
+	{
+		for (int h = 0; h < 5 - w; h++)
+		{
+			t ? input(x, y, z, w, sea, size) : inputPc(x, y, z, w, sea, size);
+			for (int i = 0; i < w; i++)
+			{
+				(z != 2 ? sea[y][x + i] : sea[y + i][x]) = 1;
+			}
+			for (int i = (y > 0 ? y - 1 : y); i <= (z == 2 ? (y < size - w ? y + w : y + w - 1) : (y < size - 1 ? y + 1 : y)); i++)
+			{
+				for (int j = (x > 0 ? x - 1 : x); j <= (z == 1 ? (x < size - w ? x + w : x + w - 1) : (x < size - 1 ? x + 1 : x)); j++)
+				{
+					if (!sea[i][j])
+					{
+						sea[i][j] = 2;
+					}
+				}
+			}
+			t ? outSea(size, sea) : nichego();
+		}
+	}
+}
+void outSea(const int size, int** sea)
+{
+	cout << "  а б в г д е ж з и й\n";
+	for (int i = 0; i < size; i++)
+	{
+		cout << i;
+		for (int j = 0; j < size; j++)
+		{
+			cout << "|";
+			if (sea[i][j] == 0)
+				cout << " ";
+			else if (sea[i][j] == 1)
+				cout << "#";
+			else if (sea[i][j] == 2)
+				cout << ".";
+			else if (sea[i][j] == 3)
+				cout << "O";
+			else if (sea[i][j] == 4)
+				cout << "X";
+		}
+		cout << "\n";
+	}
+}
+void inputPc(int& x, int& y, int& z, int& w, int** sea, const int size)
+{
+	int q = 0, a = 0;
+	do
+	{
+		if (w > 1)
+			z = rand() % 2 + 1;
+		x = rand() % 10;
+		y = rand() % 10;
+		a = w;
+		for (int i = 0; i < w; i++)
+			if (!(z != 2 ? (x + w < size ? sea[y][x + i] : 1) : (y + w < size ? sea[y + i][x] : 1)))
+				a--;
+	} while (a);
+}
+void input(int& x, int& y, int& z, int& w, int** sea, const int size)
+{
+	int q = 0, a = 0;
+	char letter = ' ';
+
+	do
+	{
+		if (q++)
+		{
+			cout << "не правильно\n";
+		}
+		if (w > 1)
+		{
+			cout << "направление(1 гориз|2 вертик): ";
+			cin >> z;
+		}
+		cout << "буква: ";
+		cin >> letter;
+		x = (int)letter + 96;
+		cout << "цифра: ";
+		cin >> y;
+		a = w;
+		for (int i = 0; i < w; i++)
+			if (!(z != 2 ? (x + w < size + 1 ? sea[y][x + i] : 1) : (y + w < size + 1 ? sea[y + i][x] : 1)))
+				a--;
+	} while (a);
+	system("cls");
+}
+void nichego()
+{
+
+}
